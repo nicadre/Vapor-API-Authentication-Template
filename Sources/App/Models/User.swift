@@ -27,8 +27,8 @@ final class User: Auth.User {
     var name: String = ""
     var password: String = ""
     
-    var apiKeyID: String = URandom().secureToken
-    var apiKeySecret: String = URandom().secureToken
+    var apiKey: String = URandom().secureToken
+    var apiSecret: String = URandom().secureToken
     
     static func authenticate(credentials: Credentials) throws -> Auth.User {
         var user: User?
@@ -41,7 +41,7 @@ final class User: Auth.User {
             }
             
         case let credentials as APIKey:
-            user = try User.query().filter("api_key_id", credentials.id).filter("api_key_secret", credentials.secret).first()
+            user = try User.query().filter("api_key", credentials.id).filter("api_secret", credentials.secret).first()
             
         default:
             throw UnsupportedCredentialsError()
@@ -92,8 +92,8 @@ final class User: Auth.User {
         self.email = try node.extract("email")
         self.name = try node.extract("name")
         self.password = try node.extract("password")
-        self.apiKeyID = try node.extract("api_key_id")
-        self.apiKeySecret = try node.extract("api_key_secret")
+        self.apiKey = try node.extract("api_key")
+        self.apiSecret = try node.extract("api_secret")
     }
     
     func addParameters(_ parameters: [String : String]) {
@@ -113,8 +113,8 @@ final class User: Auth.User {
             "email": self.email,
             "name": self.name,
             "password": self.password,
-            "api_key_id": self.apiKeyID,
-            "api_key_secret": self.apiKeySecret
+            "api_key": self.apiKey,
+            "api_secret": self.apiSecret
         ])
     }
     
