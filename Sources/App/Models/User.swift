@@ -21,10 +21,12 @@ final class User: Auth.User {
     
     // Database Fields
     var id: Node?
+    
     var username: String
     var email: String = ""
     var name: String = ""
     var password: String = ""
+    
     var apiKeyID: String = URandom().secureToken
     var apiKeySecret: String = URandom().secureToken
     
@@ -37,9 +39,6 @@ final class User: Auth.User {
             if let password = fetchedUser?.password, password != "", (try? BCrypt.verify(password: credentials.password, matchesHash: password)) == true {
                 user = fetchedUser
             }
-            
-        case let credentials as Identifier:
-            user = try User.find(credentials.id)
             
         case let credentials as APIKey:
             user = try User.query().filter("api_key_id", credentials.id).filter("api_key_secret", credentials.secret).first()
