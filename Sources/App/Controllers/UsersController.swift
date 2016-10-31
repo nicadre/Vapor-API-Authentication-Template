@@ -20,7 +20,7 @@ final class UsersController {
     func register(request: Request) throws -> ResponseRepresentable {
         // Get our credentials
         guard let username = request.data["username"]?.string, let password = request.data["password"]?.string else {
-            return try JSON(node: ["error": "Missing username or password"])
+            throw Abort.custom(status: Status.badRequest, message: "Missing username or password")
         }
         let credentials = UsernamePassword(username: username, password: password)
         
@@ -42,20 +42,20 @@ final class UsersController {
             try request.auth.login(credentials)
             return try JSON(node: ["success": true, "user": request.user().makeNode()])
         } catch let e as TurnstileError {
-            return try JSON(node: ["error": e.description])
+            throw Abort.custom(status: Status.badRequest, message: e.description)
         }
     }
     
     func login(request: Request) throws -> ResponseRepresentable {
         guard let username = request.data["username"]?.string, let password = request.data["password"]?.string else {
-            return try JSON(node: ["error": "Missing username or password"])
+            throw Abort.custom(status: Status.badRequest, message: "Missing username or password")
         }
         let credentials = UsernamePassword(username: username, password: password)
         do {
             try request.auth.login(credentials)
             return try JSON(node: ["success": true, "user": request.user().makeNode()])
         } catch _ {
-            return try JSON(node: ["error": "Invalid username or password"])
+            throw Abort.custom(status: Status.badRequest, message: "Invalid username or password")
         }
     }
     
